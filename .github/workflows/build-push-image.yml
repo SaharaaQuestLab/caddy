@@ -13,11 +13,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Convert repository owner to lowercase
+        run: echo "REPO_OWNER_LC=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker Image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/caddy:latest .
+        run: docker build -t ghcr.io/${{ env.REPO_OWNER_LC }}/caddy:latest .
 
       - name: Push Docker Image
-        run: docker push ghcr.io/${{ github.repository_owner }}/caddy:latest
+        run: docker push ghcr.io/${{ env.REPO_OWNER_LC }}/caddy:latest
